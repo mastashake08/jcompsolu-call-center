@@ -45,7 +45,7 @@ class MenuController extends Controller
 public function generateMenuTwiml()
 {
     $response = new VoiceResponse();
-    $gather = $response->gather(['numDigits' => 1, 'action' => '/menu']);
+    $gather = $response->gather(['numDigits' => 1, 'action' => '/api/menu']);
 
     $gather->say('Press 1 for technical support.');
     $gather->say('Press 2 for billing and account inquiries.');
