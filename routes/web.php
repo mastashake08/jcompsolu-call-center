@@ -13,10 +13,7 @@ use App\Http\Controllers\MenuController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Route::post('/menu', [MenuController::class, 'handleMenu']);
 
-Route::get('/menu', 'MenuController@generateMenuTwiml');
+Route::get('/menu', 'App\Http\Controllers\MenuController@generateMenuTwiml');
