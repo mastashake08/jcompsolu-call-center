@@ -16,5 +16,3 @@ use App\Http\Controllers\MenuController;
 
 
 Route::get('/menu', 'App\Http\Controllers\MenuController@generateMenuTwiml');
-
-Route::post('/sms', 'App\Http\Controllers\SmsController@handleIncomingSms');
