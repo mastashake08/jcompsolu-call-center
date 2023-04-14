@@ -20,7 +20,8 @@ class MenuController extends Controller
           break;
       case 2:
           // Handle billing and account inquiries option
-          $response->say('You selected billing and account inquiries.');
+          $response->say('You selected software services.');
+          $response->dial('+18594024863');
           break;
       case 3:
           // Forward call to sales department
@@ -29,13 +30,13 @@ class MenuController extends Controller
           break;
       case 4:
           // Forward call to Jyrone Parker
-          $response->say('You selected to speak to Jyrone Parker. Please wait while we transfer your call.');
+          $response->say('You selected to speak to the media department. Please wait while we transfer your call.');
           $response->dial('+18594024863');
           break;
       default:
           // Handle invalid input
           $response->say('Invalid selection. Please try again.', ['voice' => 'alice']);
-          $response->gather(['numDigits' => 1, 'action' => '/menu']);
+          $response->gather(['numDigits' => 1, 'action' => '/api/menu']);
           break;
   }
 
@@ -47,10 +48,10 @@ public function generateMenuTwiml()
     $response = new VoiceResponse();
     $gather = $response->gather(['numDigits' => 1, 'action' => '/api/menu']);
 
-    $gather->say('Press 1 for technical support.');
-    $gather->say('Press 2 for billing and account inquiries.');
+    $gather->say('Press 1 for technical support including hardware repair and networking');
+    $gather->say('Press 2 for software services including web and app development');
     $gather->say('Press 3 for sales and product information.');
-    $gather->say('Press 4 to speak to Jyrone Parker.');
+    $gather->say('Press 4 to media.');
 
     return response($response)->header('Content-Type', 'text/xml');
 }
