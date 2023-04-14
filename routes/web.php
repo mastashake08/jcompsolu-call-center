@@ -17,3 +17,5 @@ use App\Http\Controllers\MenuController;
 Route::post('/menu', [MenuController::class, 'handleMenu']);
 
 Route::get('/menu', 'App\Http\Controllers\MenuController@generateMenuTwiml');
+
+Route::post('/sms', 'App\Http\Controllers\SmsController@handleIncomingSms');
