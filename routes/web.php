@@ -14,7 +14,6 @@ use App\Http\Controllers\MenuController;
 */
 
 
-Route::post('/menu', 'App\Http\Controllers\MenuController@handleMenu');
 
 Route::get('/menu', 'App\Http\Controllers\MenuController@generateMenuTwiml');
 
