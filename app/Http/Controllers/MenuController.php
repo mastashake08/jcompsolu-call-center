@@ -120,7 +120,7 @@ public function pay(Request $request, $num, $value) {
 
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
     $url = secure_url('/');
-    $body = `SOMEONE SENT YOU {$value}! To claim it go to {$url}`;
+    $body = 'SOMEONE SENT YOU '.$value.'! To claim it go to '.$url;
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
     var_dump($body);
     $client->messages->create(
