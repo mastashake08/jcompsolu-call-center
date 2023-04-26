@@ -14,41 +14,11 @@ class MenuController extends Controller
 
   switch ($selectedOption) {
       case 1:
-          // Forward call to technical support
-          $response->say('You selected technical support. Before we transfer you our services are billed at $50/hr with a minimum of 30 minutes. Please input your card information');
-          $response->pay([
-            'paymentConnector' => 'Stripe_Connector_Test',
-            'tokenType' => 'reusable',
-            'chargeAmount' => '0'
-          ]);
+          // Forward call to Jyrone Parker
+          $response->say('You selected to speak to the IT department. Please wait while we transfer your call.');
           $response->dial('+18594024863');
           break;
       case 2:
-          // Handle billing and account inquiries option
-          $response->say('You selected software services.');
-          $response->dial('+18594024863');
-          break;
-      case 3:
-          // Forward call to sales department
-          $response->say('You selected sales and product information. Please wait while we transfer your call.');
-          $response->dial('+18594024863');
-          break;
-      case 4:
-          // Forward call to Jyrone Parker
-          $response->say('You selected to speak to the media department. Please wait while we transfer your call.');
-          $response->dial('+18594024863');
-          break;
-      case 5:
-      $response->pay([
-        'paymentConnector' => 'Stripe_Connector_Test',
-        'tokenType' => 'one-time',
-        'chargeAmount' => '20.00',
-        'action' => secure_url('/api/twilio/incoming/payment')
-      ]);
-      $response->say('Thank you');
-
-      break;
-      case 6:
         $gather = $response->gather(['numDigits' => 10, 'action' => secure_url('api/send-money-start')]);
 
         $gather->say('Welcome to J Comp Pay! J Computer Solutions peer-to-peer payment system');
@@ -97,12 +67,8 @@ public function generateMenuTwiml()
     $response = new VoiceResponse();
     $gather = $response->gather(['numDigits' => 1, 'action' => '/api/menu']);
 
-    $gather->say('Press 1 for technical support including hardware repair and networking');
-    $gather->say('Press 2 for software services including web and app development');
-    $gather->say('Press 3 for sales and product information.');
-    $gather->say('Press 4 to media.');
-    $gather->say('Press 5 to manage your account.');
-    $gather->say('Press 6 to send money using J Comp Pay!');
+    $gather->say('Press 1 to get IT help.');
+    $gather->say('Press 2 to send money using J Comp Pay!');
 
     echo $response;
 }
