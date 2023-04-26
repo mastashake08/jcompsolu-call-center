@@ -85,49 +85,49 @@ public function generateMenuTwiml()
 public function pay(Request $request, $num, $value) {
   $response = new VoiceResponse();
   $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
-  $user = \App\Models\User::firstOrNew([
-    'phone_number' => $num
-  ], [
-    'password' => bcrypt('abc123'),
-    'name' => $num
-  ]);
-  if($user->stripe_account_id === null) {
-    $account = $this->stripe->accounts->create([
-        'country' => 'US',
-        'type' => 'express',
-        'capabilities' => [
-          'card_payments' => ['requested' => true],
-          'transfers' => ['requested' => true],
-        ],
-        'business_type' => 'individual',
-        'business_profile' => ['url' => 'https://calls.jcompsolu.com'],
-      ]);
-      $user->stripe_account_id = $account->id;
-      $user->save();
-  }
-  $links = $this->stripe->accountLinks->create([
-      'account' => $account->id,
-      'refresh_url' => secure_url('/stripe/reauth?account_id='.$account->id),
-      'return_url' => secure_url('/stripe/return?account_id='.$account->id),
-      'type' => 'account_onboarding',
-    ]);
-  $transaction = \App\Models\Transaction::Create([
-    'from' => $request->input('From'),
-    'to' => $num,
-    'amount' => $value,
-    'user_id' => $user->id
-  ]);
-  $this->sendMessageToRec($num, $value, $links->url);
+
+  $this->sendMessageToRec($num, $value);
   $this->sendMessageToSend($request->input('From'), $value);
 
   echo $response;
   }
 
-  private function sendMessageToRec($num, $value, $url) {
-
+  private function sendMessageToRec($num, $value) {
+    $user = \App\Models\User::firstOrNew([
+      'phone_number' => $num
+    ], [
+      'password' => bcrypt('abc123'),
+      'name' => $num
+    ]);
+    if($user->stripe_account_id === null) {
+      $account = $this->stripe->accounts->create([
+          'country' => 'US',
+          'type' => 'express',
+          'capabilities' => [
+            'card_payments' => ['requested' => true],
+            'transfers' => ['requested' => true],
+          ],
+          'business_type' => 'individual',
+          'business_profile' => ['url' => 'https://calls.jcompsolu.com'],
+        ]);
+        $user->stripe_account_id = $account->id;
+        $user->save();
+    }
+    $links = $this->stripe->accountLinks->create([
+        'account' => $account->id,
+        'refresh_url' => secure_url('/stripe/reauth?account_id='.$account->id),
+        'return_url' => secure_url('/stripe/return?account_id='.$account->id),
+        'type' => 'account_onboarding',
+      ]);
+    $transaction = \App\Models\Transaction::Create([
+      'from' => $request->input('From'),
+      'to' => $num,
+      'amount' => $value,
+      'user_id' => $user->id
+    ]);
 
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
-    $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$url;
+    $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$links->url;
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
     $client->messages->create(
         // Where to send a text message (your cell phone?)
