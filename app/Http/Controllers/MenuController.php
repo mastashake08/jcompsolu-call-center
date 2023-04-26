@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Twilio\TwiML\VoiceResponse;
-
+use Twilio\Rest\Client;
 class MenuController extends Controller
 {
   public function handleMenu(Request $request)
@@ -71,8 +71,8 @@ class MenuController extends Controller
 
 public function startSendMoney (Request $request) {
   $response = new VoiceResponse();
-  $userInput = $request->input('Digits');
-  $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-get-funds')]);
+  $num = $request->input('Digits');
+  $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-get-funds?num='.$num)]);
 
   $gather->say('Input the desired amount to send. You can send up to $1000.');
   $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
@@ -82,11 +82,12 @@ public function startSendMoney (Request $request) {
 public function getCardInfo (Request $request) {
   $response = new VoiceResponse();
   $value = $request->input('Digits');
+  $num = $request->input('num');
   $response->pay([
     'paymentConnector' => 'Stripe_Connector_Test',
     'tokenType' => 'one-time',
     'chargeAmount' => number_format(($value /100), 2, '.', ' '),
-    'action' => secure_url('/api/twilio/incoming/payment')
+    'action' => secure_url('/api/twilio/incoming/payment?num='.$num.'&value='.$value)
   ]);
   return response($response)->header('Content-Type', 'text/xml');
 }
@@ -110,6 +111,21 @@ public function pay(Request $request) {
   $response = new VoiceResponse();
   $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
   $response->say('A text message has been sent to the receiving party.');
+  $this->sendMessage($request->input('num'), $request->input('value'));
   return response($response)->header('Content-Type', 'text/xml');
+  }
+
+  private function sendMessage($num, $value) {
+    $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
+    $url = secure_url('/');
+    $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
+    $client->messages->create(
+        // Where to send a text message (your cell phone?)
+        $num,
+        array(
+            'from' => $twilio_number,
+            'body' => `SOMEONE SENT YOU {$value}! To claim it go to {$url}`
+        )
+    );
   }
 }
