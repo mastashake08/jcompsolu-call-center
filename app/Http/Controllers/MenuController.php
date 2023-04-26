@@ -115,7 +115,7 @@ public function pay(Request $request, $num, $value) {
         $user->save();
     }
     $links = $this->stripe->accountLinks->create([
-        'account' => is_null($account)  ? $account->id : $user->stripe_account_id,
+        'account' => is_null($account)  ? $user->stripe_account_id : $account->id,
         'refresh_url' => secure_url('/stripe/reauth?account_id='.$account->id),
         'return_url' => secure_url('/stripe/return?account_id='.$account->id),
         'type' => 'account_onboarding',
