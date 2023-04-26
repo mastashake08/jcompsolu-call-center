@@ -16,7 +16,11 @@ class MenuController extends Controller
       case 1:
           // Forward call to technical support
           $response->say('You selected technical support. Before we transfer you our services are billed at $50/hr with a minimum of 30 minutes. Please input your card information');
-          $response->pay(['paymentConnector' => 'Stripe_Connector_Test']);
+          $response->pay([
+            'paymentConnector' => 'Stripe_Connector_Test',
+            'tokenType' => 'reusable',
+            'chargeAmount' => '0'
+          ]);
           $response->dial('+18594024863');
           break;
       case 2:
