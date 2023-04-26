@@ -15,6 +15,11 @@ class MenuController extends Controller
   function __construct() {
       $this->stripe =  new \Stripe\StripeClient(env('STRIPE_SECRET'));
   }
+  private function callIt ($response) {
+    // Forward call to Jyrone Parker
+    $response->say('You selected to speak to the IT department. Please wait while we transfer your call.');
+    $response->dial('+18594024863');
+  }
   public function handleMenu(Request $request)
 {
   $selectedOption = $request->input('Digits');
@@ -22,20 +27,10 @@ class MenuController extends Controller
 
   switch ($selectedOption) {
       case 1:
-          // Forward call to Jyrone Parker
-          $response->say('You selected to speak to the IT department. Please wait while we transfer your call.');
-          $response->dial('+18594024863');
+          $this->callIt($response);
           break;
       case 2:
-        $gather = $response->gather(['numDigits' => 10, 'action' => secure_url('api/send-money-start-confirm')]);
-
-        $gather->say('Welcome to J Comp Pay! J Computer Solutions peer-to-peer payment system');
-        $gather->say('All you need is a cell number and your debit card!');
-
-
-
-        $gather->say('To get started put in the 10 digit cell phone number that is receiving the funds!');
-
+        $this->startPhone($response);
       break;
       default:
           // Handle invalid input
@@ -46,42 +41,47 @@ class MenuController extends Controller
 
   echo $response;
 }
-public function confirmStartSendMoney (Request $request) {
+
+public function startPhone($response) {
+  $gather = $response->gather(['numDigits' => 10, 'action' => secure_url('api/send-money-phone-confirm')]);
+
+  $gather->say('Welcome to J Comp Pay! J Computer Solutions peer-to-peer payment system');
+  $gather->say('All you need is a cell number and your debit card!');
+
+
+
+  $gather->say('To get started put in the 10 digit cell phone number that is receiving the funds!');
+
+}
+
+public function confirmPhone (Request $request) {
   $response = new VoiceResponse();
-  $num = $request->input('Digits');
-  if($num == 1) {
-    $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-get-funds?num='.$num)]);
+  $phone = $request->input('Digits');
 
-    $gather->say('Input the desired amount to send. You can send up to $1000.');
-    $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
-    echo $response;
-  } else {
-    $gather = $response->gather(['numDigits' => 10, 'action' => secure_url('api/send-money-start-confirm')]);
+  $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-start?num='.$phone)]);
 
-    $gather->say('Welcome to J Comp Pay! J Computer Solutions peer-to-peer payment system');
-    $gather->say('All you need is a cell number and your debit card!');
-
-
-
-    $gather->say('To get started put in the 10 digit cell phone number that is receiving the funds!');
-
-  break;
-  default:
-      // Handle invalid input
-      $response->say('Invalid selection. Please try again.', ['voice' => 'alice']);
-      $response->gather(['numDigits' => 1, 'action' => '/api/menu']);
-      break;
-  }
+  $gather->say('I heard '.$phone.' is that correct? Press 1 for yes and 2 for no.');
+  echo $response;
 
 }
 public function startSendMoney (Request $request) {
   $response = new VoiceResponse();
   $num = $request->input('Digits');
-  $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-get-funds-confirm?num='.$num)]);
 
-  $gather->say('Input the desired amount to send. You can send up to $1000.');
-  $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
-  echo $response;
+
+  if($num == 1) {
+    $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-start-confirm?num='.$num)]);
+
+    $gather->say('Input the desired amount to send. You can send up to $1000.');
+    $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
+    echo $response;
+  } else {
+    $this->startPhone();
+  }
+
+
+
+
 }
 
 public function confirmStartSendMoney (Request $request) {

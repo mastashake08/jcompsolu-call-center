@@ -24,3 +24,4 @@ Route::post('/send-money-start','App\Http\Controllers\MenuController@startSendMo
 Route::post('/send-money-start-confirm','App\Http\Controllers\MenuController@confirmStartSendMoney');
 Route::post('/send-money-get-funds-confirm','App\Http\Controllers\MenuController@confirmGetCardInfo');
 Route::post('/send-money-get-funds','App\Http\Controllers\MenuController@getCardInfo');
+Route::get('/send-money-phone-confirm', 'App\Http\Controllers\MenuController@confirmPhone');
