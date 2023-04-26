@@ -90,7 +90,7 @@ public function confirmStartSendMoney (Request $request) {
   $amt = $request->input('Digits');
   $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-get-funds?num='.$num.'&val='.$amt)]);
 
-  $gather->say('Just to confirm. You want to sent $'.number_format(($num /100), 2, '.', ' '));
+  $gather->say('Just to confirm. You want to sent $'.number_format(($amt /100), 2, '.', ' ').' to '.implode(' ',str_split($num)));
   $gather->say('Press 1 for yes. 2 for no.');
   echo $response;
 }
@@ -104,7 +104,7 @@ public function getCardInfo (Request $request) {
     $response->pay([
       'paymentConnector' => 'Stripe_Connector_Test',
       'tokenType' => 'one-time',
-      'chargeAmount' => number_format(($num /100), 2, '.', ' '),
+      'chargeAmount' => number_format(($value /100), 2, '.', ' '),
       'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
     ]);
 
