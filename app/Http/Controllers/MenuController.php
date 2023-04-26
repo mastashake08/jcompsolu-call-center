@@ -87,7 +87,7 @@ public function pay(Request $request, $num, $value) {
   $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
 
   $this->sendMessageToRec($num, $request->input('From'), $value);
-  $this->sendMessageToSend($request->input('From'), $value);
+  $this->sendMessageToSend($request->input('From'), $value, $request['PaymentConfirmationCode']);
 
   echo $response;
   }
@@ -125,7 +125,8 @@ public function pay(Request $request, $num, $value) {
       'from' => $from,
       'to' => $num,
       'amount' => $value,
-      'user_id' => $user->id
+      'user_id' => $user->id,
+      'stripe_transaction_id' =>
     ]);
 
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
@@ -141,10 +142,10 @@ public function pay(Request $request, $num, $value) {
     );
   }
 
-  private function sendMessageToSend($num, $value) {
+  private function sendMessageToSend($num, $value, $transaction_id) {
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
     $url = secure_url('/');
-    $body = 'Thank you for sending $'.number_format(($value /100), 2, '.', ' ').' with J Comp Pay!';
+    $body = 'Thank you for sending $'.number_format(($value /100), 2, '.', ' ').' with J Comp Pay! Your transaction ID is '. $transaction_id . ' keep this for your records.';
 
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
     $client->messages->create(
