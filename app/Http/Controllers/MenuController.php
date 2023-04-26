@@ -66,7 +66,7 @@ class MenuController extends Controller
           break;
   }
 
-  return response($response)->header('Content-Type', 'text/xml');
+  echo $response;
 }
 
 public function startSendMoney (Request $request) {
@@ -76,7 +76,7 @@ public function startSendMoney (Request $request) {
 
   $gather->say('Input the desired amount to send. You can send up to $1000.');
   $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
-  return response($response)->header('Content-Type', 'text/xml');
+  echo $response;
   }
 
 public function getCardInfo (Request $request) {
@@ -89,7 +89,7 @@ public function getCardInfo (Request $request) {
     'chargeAmount' => number_format(($value /100), 2, '.', ' '),
     'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
   ]);
-  return response($response)->header('Content-Type', 'text/xml');
+  echo $response;
 }
 
 public function generateMenuTwiml()
@@ -104,7 +104,7 @@ public function generateMenuTwiml()
     $gather->say('Press 5 to manage your account.');
     $gather->say('Press 6 to send money using J Comp Pay!');
 
-    return response($response)->header('Content-Type', 'text/xml');
+    echo $response;
 }
 
 public function pay(Request $request, $num, $value) {
@@ -113,7 +113,7 @@ public function pay(Request $request, $num, $value) {
 
   $this->sendMessageToRec($num, $value);
   $this->sendMessageToSend($request->input('From'), $value);
-  return response($response)->header('Content-Type', 'text/xml');
+  echo $response;
   }
 
   private function sendMessageToRec($num, $value) {
