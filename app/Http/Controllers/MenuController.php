@@ -72,7 +72,7 @@ public function startSendMoney (Request $request) {
   if($num == 1) {
     $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-start-confirm?num='.$num)]);
 
-    $gather->say('Input the desired amount to send. You can send up to $1000.');
+    $gather->say('Input the desired amount to send. You can send up to $999.99.');
     $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
     echo $response;
   } else {
@@ -86,8 +86,9 @@ public function startSendMoney (Request $request) {
 
 public function confirmStartSendMoney (Request $request) {
   $response = new VoiceResponse();
-  $num = $request->input('Digits');
-  $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-get-funds?num='.$request->input('num'))]);
+  $num = $request->input('num');
+  $amt = $request->input('Digits');
+  $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-get-funds?num='.$num.'&val='.$amt)]);
 
   $gather->say('Just to confirm. You want to sent $'.number_format(($num /100), 2, '.', ' '));
   $gather->say('Press 1 for yes. 2 for no.');
@@ -96,14 +97,14 @@ public function confirmStartSendMoney (Request $request) {
 
 public function getCardInfo (Request $request) {
   $response = new VoiceResponse();
-  $value = $request->input('Digits');
+  $value = $request->input('val');
   $num = $request->input('num');
   if($num == 1) {
 
     $response->pay([
       'paymentConnector' => 'Stripe_Connector_Test',
       'tokenType' => 'one-time',
-      'chargeAmount' => number_format(($value /100), 2, '.', ' '),
+      'chargeAmount' => number_format(($num /100), 2, '.', ' '),
       'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
     ]);
 
