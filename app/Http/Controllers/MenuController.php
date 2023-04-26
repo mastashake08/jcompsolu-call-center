@@ -91,6 +91,8 @@ public function confirmStartSendMoney (Request $request) {
   $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-get-funds?num='.$num.'&val='.$amt)]);
 
   $gather->say('Just to confirm. You want to sent $'.number_format(($amt /100), 2, '.', ' ').' to '.implode(' ',str_split($num)));
+  $gather->say('A 8% processing fee is added to all payments sent.');
+  $gather->say('This brings the total charged amount to '..number_format((($amt * 1.08) /100), 2, '.', ' '));
   $gather->say('Press 1 for yes. 2 for no.');
   echo $response;
 }
@@ -105,7 +107,7 @@ public function getCardInfo (Request $request) {
     $response->pay([
       'paymentConnector' => 'Stripe_Connector_Test',
       'tokenType' => 'one-time',
-      'chargeAmount' => number_format(($value /100), 2, '.', ' '),
+      'chargeAmount' => number_format((($value*1.08) /100), 2, '.', ' '),
       'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
     ]);
 
@@ -129,6 +131,7 @@ public function generateMenuTwiml()
 public function pay(Request $request, $num, $value) {
   $response = new VoiceResponse();
   $response->say('Your payment has been taken, your confirmation code has been sent to your phone.');
+  $response->say('Thank you for using J Comp Pay! Goodbye!')
 
   $this->sendMessageToRec($num, $request->input('From'), $value, $request['PaymentConfirmationCode']);
   $this->sendMessageToSend($request->input('From'), $value, $request['PaymentConfirmationCode']);
@@ -166,17 +169,18 @@ public function pay(Request $request, $num, $value) {
         'return_url' => secure_url('/stripe/return?account_id='.$account_id),
         'type' => 'account_onboarding',
       ]);
+      $amount = floor($value * 1.08)
     $transaction = \App\Models\Transaction::Create([
       'from' => $from,
       'to' => $num,
-      'amount' => $value,
+      'amount' => $amount,
       'user_id' => $user->id,
       'stripe_transaction_id' => $transaction_id
     ]);
     $acct = $this->stripe->accounts->retrieve($account_id);
     if($acct->details_submitted) {
       $this->stripe->transfers->create([
-          'amount' => floor($value * 0.92),
+          'amount' => $value ,
           'currency' => 'usd',
           'destination' => $account_id,
           'transfer_group' => 'TRANSACTION'.$transaction->id,
