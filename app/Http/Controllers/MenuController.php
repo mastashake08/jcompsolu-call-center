@@ -119,7 +119,7 @@ public function pay(Request $request, $num, $value) {
   private function sendMessageToRec($num, $value) {
 
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
-    $url = secure_url('/');
+    $url = 'https://connect.stripe.com/express/oauth/authorize?response_type=code&client_id=ca_BGdWmg1Pazi98atHGMcud5YuLgzBDonT';
     $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$url;
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
     $client->messages->create(
