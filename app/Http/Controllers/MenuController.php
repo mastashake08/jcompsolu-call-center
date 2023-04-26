@@ -17,7 +17,6 @@ class MenuController extends Controller
           // Forward call to technical support
           $response->say('You selected technical support. Before we transfer you our services are billed at $50/hr with a minimum of 30 minutes. Please input your card information');
           $response->pay(['paymentConnector' => 'Stripe_Connector_Test']);
-          $response->say('Now transferring you to tech support!')
           $response->dial('+18594024863');
           break;
       case 2:
