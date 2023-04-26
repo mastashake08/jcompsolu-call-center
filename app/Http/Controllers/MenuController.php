@@ -99,7 +99,8 @@ public function getCardInfo (Request $request) {
   $response = new VoiceResponse();
   $value = $request->input('val');
   $num = $request->input('num');
-  if($num == 1) {
+  $ans = $request->input('Digits');
+  if($ans == 1) {
 
     $response->pay([
       'paymentConnector' => 'Stripe_Connector_Test',
