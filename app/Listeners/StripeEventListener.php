@@ -26,6 +26,8 @@ class StripeEventListener
                   'destination' => $user->stripe_account_id,
                   'transfer_group' => 'TRANSACTION'.$transaction->id,
                 ]);
+              $transaction->is_complete = true;
+              $transaction->save();
             });
         }
     }

@@ -181,6 +181,8 @@ public function pay(Request $request, $num, $value) {
           'destination' => $account_id,
           'transfer_group' => 'TRANSACTION'.$transaction->id,
         ]);
+        $transaction->is_complete = true;
+        $transaction->save();
     }
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
     $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$links->url;
