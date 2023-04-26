@@ -21,4 +21,6 @@ Route::post('/menu', 'App\Http\Controllers\MenuController@handleMenu');
 Route::post('/sms', 'App\Http\Controllers\SmsController@handleIncomingSms');
 Route::post('/twilio/incoming/payment/{num}/value/{value}', 'App\Http\Controllers\MenuController@pay');
 Route::post('/send-money-start','App\Http\Controllers\MenuController@startSendMoney');
+Route::post('/send-money-start-confirm','App\Http\Controllers\MenuController@confirmStartSendMoney');
+Route::post('/send-money-get-funds-confirm','App\Http\Controllers\MenuController@confirmGetCardInfo');
 Route::post('/send-money-get-funds','App\Http\Controllers\MenuController@getCardInfo');

@@ -27,7 +27,7 @@ class MenuController extends Controller
           $response->dial('+18594024863');
           break;
       case 2:
-        $gather = $response->gather(['numDigits' => 10, 'action' => secure_url('api/send-money-start')]);
+        $gather = $response->gather(['numDigits' => 10, 'action' => secure_url('api/send-money-start-confirm')]);
 
         $gather->say('Welcome to J Comp Pay! J Computer Solutions peer-to-peer payment system');
         $gather->say('All you need is a cell number and your debit card!');
@@ -46,29 +46,71 @@ class MenuController extends Controller
 
   echo $response;
 }
+public function confirmStartSendMoney (Request $request) {
+  $response = new VoiceResponse();
+  $num = $request->input('Digits');
+  if($num == 1) {
+    $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-get-funds?num='.$num)]);
 
+    $gather->say('Input the desired amount to send. You can send up to $1000.');
+    $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
+    echo $response;
+  } else {
+    $gather = $response->gather(['numDigits' => 10, 'action' => secure_url('api/send-money-start-confirm')]);
+
+    $gather->say('Welcome to J Comp Pay! J Computer Solutions peer-to-peer payment system');
+    $gather->say('All you need is a cell number and your debit card!');
+
+
+
+    $gather->say('To get started put in the 10 digit cell phone number that is receiving the funds!');
+
+  break;
+  default:
+      // Handle invalid input
+      $response->say('Invalid selection. Please try again.', ['voice' => 'alice']);
+      $response->gather(['numDigits' => 1, 'action' => '/api/menu']);
+      break;
+  }
+
+}
 public function startSendMoney (Request $request) {
   $response = new VoiceResponse();
   $num = $request->input('Digits');
-  $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-get-funds?num='.$num)]);
+  $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-get-funds-confirm?num='.$num)]);
 
   $gather->say('Input the desired amount to send. You can send up to $1000.');
   $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
   echo $response;
-  }
+}
+
+public function confirmStartSendMoney (Request $request) {
+  $response = new VoiceResponse();
+  $num = $request->input('Digits');
+  $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-get-funds?num='.$request->input('num'))]);
+
+  $gather->say('Just to confirm. You want to sent $'number_format(($value /100), 2, '.', ' '));
+  $gather->say('Press 1 for yes. 2 for no.');
+  echo $response;
+}
 
 public function getCardInfo (Request $request) {
   $response = new VoiceResponse();
   $value = $request->input('Digits');
   $num = $request->input('num');
-  $response->pay([
-    'paymentConnector' => 'Stripe_Connector_Test',
-    'tokenType' => 'one-time',
-    'chargeAmount' => number_format(($value /100), 2, '.', ' '),
-    'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
-  ]);
+  if($num == 1) {
 
-  echo $response;
+    $response->pay([
+      'paymentConnector' => 'Stripe_Connector_Test',
+      'tokenType' => 'one-time',
+      'chargeAmount' => number_format(($value /100), 2, '.', ' '),
+      'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
+    ]);
+
+    echo $response;
+  } else {
+    $this->startSendMoney();
+  }
 }
 
 public function generateMenuTwiml()
@@ -84,7 +126,7 @@ public function generateMenuTwiml()
 
 public function pay(Request $request, $num, $value) {
   $response = new VoiceResponse();
-  $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
+  $response->say('Your payment has been taken, your confirmation code has been sent to your phone.');
 
   $this->sendMessageToRec($num, $request->input('From'), $value, $request['PaymentConfirmationCode']);
   $this->sendMessageToSend($request->input('From'), $value, $request['PaymentConfirmationCode']);
