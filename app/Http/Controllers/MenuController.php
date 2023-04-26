@@ -87,12 +87,21 @@ public function getCardInfo (Request $request) {
       $user->stripe_account_id = $account->id;
       $user->save();
   }
+  $links = $this->stripe->accountLinks->create([
+      'account' => $account->id,
+      'refresh_url' => secure_url('/stripe/reauth?account_id='.$account->id),
+      'return_url' => secure_url('/stripe/return?account_id='.$account->id),
+      'type' => 'account_onboarding',
+    ]);
   $transaction = \App\Models\Transaction::Create([
     'from' => $request->input('From'),
     'to' => $num,
     'amount' => $value,
     'user_id' => $user->id
   ]);
+  $this->sendMessageToRec($num, $value, $links->url);
+  $this->sendMessageToSend($request->input('From'), $value);
+
   echo $response;
 }
 
@@ -111,23 +120,14 @@ public function pay(Request $request, $num, $value) {
   $response = new VoiceResponse();
   $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
 
-  $this->sendMessageToRec($num, $value);
-  $this->sendMessageToSend($request->input('From'), $value);
   echo $response;
   }
 
-  private function sendMessageToRec($num, $value) {
+  private function sendMessageToRec($num, $value, $url) {
 
-
-    $links = $this->stripe->accountLinks->create([
-        'account' => $account->id,
-        'refresh_url' => secure_url('/stripe/reauth?account_id='.$account->id),
-        'return_url' => secure_url('/stripe/return?account_id='.$account->id),
-        'type' => 'account_onboarding',
-      ]);
 
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
-    $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$links->url;
+    $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$url;
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
     $client->messages->create(
         // Where to send a text message (your cell phone?)
