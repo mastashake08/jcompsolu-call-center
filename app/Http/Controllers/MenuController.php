@@ -60,7 +60,7 @@ public function confirmPhone (Request $request) {
 
   $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-start?num='.$phone)]);
 
-  $gather->say('I heard '.$phone.' is that correct? Press 1 for yes and 2 for no.');
+  $gather->say('I heard '.implode(' ',str_split($phone)).' is that correct? Press 1 for yes and 2 for no.');
   echo $response;
 
 }
@@ -89,7 +89,7 @@ public function confirmStartSendMoney (Request $request) {
   $num = $request->input('Digits');
   $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-get-funds?num='.$request->input('num'))]);
 
-  $gather->say('Just to confirm. You want to sent $'.number_format(($request->input('num') /100), 2, '.', ' '));
+  $gather->say('Just to confirm. You want to sent $'.number_format(($num /100), 2, '.', ' '));
   $gather->say('Press 1 for yes. 2 for no.');
   echo $response;
 }
