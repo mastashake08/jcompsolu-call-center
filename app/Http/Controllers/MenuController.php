@@ -66,11 +66,11 @@ public function confirmPhone (Request $request) {
 }
 public function startSendMoney (Request $request) {
   $response = new VoiceResponse();
-  $num = $request->input('num');
+  $num = $request->input('Digits');
 
 
   if($num == 1) {
-    $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-start-confirm?num='.$num)]);
+    $gather = $response->gather(['numDigits' => 6, 'action' => secure_url('api/send-money-start-confirm?num='.$request->input('num'))]);
 
     $gather->say('Input the desired amount to send. You can send up to $999.99.');
     $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
