@@ -125,10 +125,10 @@ public function pay(Request $request, $num, $value) {
     $client->messages->create(
         // Where to send a text message (your cell phone?)
         $num,
-        array(
+        [
             'from' => $twilio_number,
             'body' => $body
-        )
+        ]
     );
   }
 
