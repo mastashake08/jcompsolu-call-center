@@ -76,7 +76,7 @@ public function startSendMoney (Request $request) {
     $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
     echo $response;
   } else {
-    $this->startPhone();
+    $this->startPhone($response);
   }
 
 
