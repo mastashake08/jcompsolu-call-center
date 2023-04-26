@@ -92,7 +92,7 @@ public function confirmStartSendMoney (Request $request) {
 
   $gather->say('Just to confirm. You want to sent $'.number_format(($amt /100), 2, '.', ' ').' to '.implode(' ',str_split($num)));
   $gather->say('A 8% processing fee is added to all payments sent.');
-  $gather->say('This brings the total charged amount to '.number_format((($amt * 1.08) /100), 2, '.', ' '));
+  $gather->say('This brings the total charged amount to $'.number_format((($amt * 1.08) /100), 2, '.', ' '));
   $gather->say('Press 1 for yes. 2 for no.');
   echo $response;
 }
