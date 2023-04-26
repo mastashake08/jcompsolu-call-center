@@ -169,7 +169,7 @@ public function pay(Request $request, $num, $value) {
         'return_url' => secure_url('/stripe/return?account_id='.$account_id),
         'type' => 'account_onboarding',
       ]);
-      $amount = floor($value * 1.08)
+      $amount = floor($value * 1.08);
     $transaction = \App\Models\Transaction::Create([
       'from' => $from,
       'to' => $num,
