@@ -11,6 +11,10 @@ use Twilio\TwiML\VoiceResponse;
 use Twilio\Rest\Client;
 class MenuController extends Controller
 {
+  private $stripe = null;
+  function __construct() {
+      $this->stripe =  new \Stripe\StripeClient(env('STRIPE_SECRET'));
+  }
   public function handleMenu(Request $request)
 {
   $selectedOption = $request->input('Digits');
@@ -87,10 +91,33 @@ public function pay(Request $request, $num, $value) {
   }
 
   private function sendMessageToRec($num, $value) {
+    $user = \App\Models\User::firstOrCreate([
+      'phone_number' => $num
+    ], [
+      'password' => bcrypt('abc123')
+    ]);
+    if($user->stripe_account_id === null) {
+      $account = $this->stripe->accounts->create([
+          'country' => 'US',
+          'type' => 'express',
+          'capabilities' => [
+            'card_payments' => ['requested' => true],
+            'transfers' => ['requested' => true],
+          ],
+          'business_type' => 'individual',
+          'business_profile' => ['url' => 'https://calls.jcompsolu.com'],
+        ]);
+        $user->stripe_account_id = $account->id;
+    }
+    $links = $this->stripe->accountLinks->create([
+        'account' => $account->id,
+        'refresh_url' => secure_url('/stripe/reauth?account_id='.$account->id),
+        'return_url' => secure_url('/stripe/return?account_id='.$account->id),
+        'type' => 'account_onboarding',
+      ]);
 
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
-    $url = 'https://connect.stripe.com/express/oauth/authorize?response_type=code&client_id=ca_BGdWmg1Pazi98atHGMcud5YuLgzBDonT';
-    $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$url;
+    $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$links->url;
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
     $client->messages->create(
         // Where to send a text message (your cell phone?)

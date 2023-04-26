@@ -12,7 +12,7 @@ class StripeConnectController extends Controller
         $this->stripe =  new \Stripe\StripeClient(env('STRIPE_SECRET'));
     }
 
-    public function createExpressAccount () {
+    public function createExpressAccount (Request $request) {
       $account = $this->stripe->accounts->create([
           'country' => 'US',
           'type' => 'express',
@@ -34,6 +34,7 @@ class StripeConnectController extends Controller
     }
 
     public function finishOnboarding (Request $request) {
+      echo 'You may close this window!';
       dd($request->all());
       // TODO: grab user account and transfer funds
     }
