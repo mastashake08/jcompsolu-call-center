@@ -90,8 +90,8 @@ public function getCardInfo (Request $request) {
   $transaction = \App\Models\Transaction::Create([
     'from' => $request->input('From'),
     'to' => $num,
-    'amount' = $value,
-    'user_id' = $user->id
+    'amount' => $value,
+    'user_id' => $user->id
   ]);
   echo $response;
 }
