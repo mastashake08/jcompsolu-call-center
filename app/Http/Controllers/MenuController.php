@@ -66,7 +66,7 @@ public function confirmPhone (Request $request) {
 }
 public function startSendMoney (Request $request) {
   $response = new VoiceResponse();
-  $num = $request->input('Digits');
+  $num = $request->input('num');
 
 
   if($num == 1) {
