@@ -122,7 +122,6 @@ public function pay(Request $request, $num, $value) {
     $url = secure_url('/');
     $body = 'SOMEONE SENT YOU '.$value.'! To claim it go to '.$url;
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
-    var_dump($body);
     $client->messages->create(
         // Where to send a text message (your cell phone?)
         $num,
@@ -134,16 +133,17 @@ public function pay(Request $request, $num, $value) {
   }
 
   private function sendMessageToSend($num, $value) {
-    dd([$num,$value]);
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
     $url = secure_url('/');
+    $body = 'Thank you for sending '.$value.' with J Comp Pay!';
+
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
     $client->messages->create(
         // Where to send a text message (your cell phone?)
         $num,
         array(
             'from' => $twilio_number,
-            'body' => `Thank you for sending {$value} with J Comp Pay!`
+            'body' => $body
         )
     );
   }
