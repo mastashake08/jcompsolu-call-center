@@ -131,7 +131,7 @@ public function generateMenuTwiml()
 public function pay(Request $request, $num, $value) {
   $response = new VoiceResponse();
   $response->say('Your payment has been taken, your confirmation code has been sent to your phone.');
-  $response->say('Thank you for using J Comp Pay! Goodbye!')
+  $response->say('Thank you for using J Comp Pay! Goodbye!');
 
   $this->sendMessageToRec($num, $request->input('From'), $value, $request['PaymentConfirmationCode']);
   $this->sendMessageToSend($request->input('From'), $value, $request['PaymentConfirmationCode']);
