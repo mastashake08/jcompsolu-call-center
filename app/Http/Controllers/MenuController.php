@@ -87,7 +87,10 @@ public function getCardInfo (Request $request) {
     'paymentConnector' => 'Stripe_Connector_Test',
     'tokenType' => 'one-time',
     'chargeAmount' => number_format(($value /100), 2, '.', ' '),
-    'action' => secure_url('/api/twilio/incoming/payment?num='.$num.'&value='.$value)
+    'action' => secure_url('/api/twilio/incoming/payment', [
+      'num' => $num,
+      'value' => $value
+    ])
   ]);
   return response($response)->header('Content-Type', 'text/xml');
 }
@@ -110,12 +113,13 @@ public function generateMenuTwiml()
 public function pay(Request $request) {
   $response = new VoiceResponse();
   $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
-  $response->say('A text message has been sent to the receiving party.');
-  $this->sendMessage($request->input('num'), $request->input('value'));
+
+  $this->sendMessageToRec($request->input('num'), $request->input('value'));
+  $this->sendMessageToSend($request->input('From'), $request->input('value'));
   return response($response)->header('Content-Type', 'text/xml');
   }
 
-  private function sendMessage($num, $value) {
+  private function sendMessageToRec($num, $value) {
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
     $url = secure_url('/');
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
@@ -125,6 +129,20 @@ public function pay(Request $request) {
         array(
             'from' => $twilio_number,
             'body' => `SOMEONE SENT YOU {$value}! To claim it go to {$url}`
+        )
+    );
+  }
+
+  private function sendMessageToSend($num, $value) {
+    $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
+    $url = secure_url('/');
+    $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
+    $client->messages->create(
+        // Where to send a text message (your cell phone?)
+        $num,
+        array(
+            'from' => $twilio_number,
+            'body' => `Thank you for sending {$value} with J Comp Pay!`
         )
     );
   }
