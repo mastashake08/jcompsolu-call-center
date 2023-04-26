@@ -99,7 +99,7 @@ public function pay(Request $request, $num, $value) {
       'password' => bcrypt('abc123'),
       'name' => $num
     ]);
-    $account = null;
+    $account = NULL;
     if($user->stripe_account_id === null) {
       $account = $this->stripe->accounts->create([
           'country' => 'US',
@@ -115,7 +115,7 @@ public function pay(Request $request, $num, $value) {
         $user->save();
     }
     $links = $this->stripe->accountLinks->create([
-        'account' => $account !== null  ? $account->id : $user->stripe_account_id,
+        'account' => is_null($account)  ? $account->id : $user->stripe_account_id,
         'refresh_url' => secure_url('/stripe/reauth?account_id='.$account->id),
         'return_url' => secure_url('/stripe/return?account_id='.$account->id),
         'type' => 'account_onboarding',
