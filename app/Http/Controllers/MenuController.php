@@ -94,7 +94,8 @@ public function pay(Request $request, $num, $value) {
     $user = \App\Models\User::firstOrCreate([
       'phone_number' => $num
     ], [
-      'password' => bcrypt('abc123')
+      'password' => bcrypt('abc123'),
+      'name' => $num
     ]);
     if($user->stripe_account_id === null) {
       $account = $this->stripe->accounts->create([
