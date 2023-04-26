@@ -173,12 +173,15 @@ public function pay(Request $request, $num, $value) {
       'user_id' => $user->id,
       'stripe_transaction_id' => $transaction_id
     ]);
-    $this->stripe->transfers->create([
-        'amount' => $value * 0.92,
-        'currency' => 'usd',
-        'destination' => $account_id,
-        'transfer_group' => 'TRANSACTION'.$transaction->id,
-      ]);
+    $acct = $this->stripe->accounts->retrieve($account_id);
+    if($account->details_submitted) {
+      $this->stripe->transfers->create([
+          'amount' => $value * 0.92,
+          'currency' => 'usd',
+          'destination' => $account_id,
+          'transfer_group' => 'TRANSACTION'.$transaction->id,
+        ]);
+    }
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
     $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$links->url;
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
