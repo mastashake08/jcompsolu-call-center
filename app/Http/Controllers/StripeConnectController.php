@@ -26,8 +26,8 @@ class StripeConnectController extends Controller
 
         $links = $this->stripe->accountLinks->create([
             'account' => $account->id,
-            'refresh_url' => secure_url('/stripe/reauth'),
-            'return_url' => secure_url('/stripe/return'),
+            'refresh_url' => secure_url('/stripe/reauth?account_id='.$account->id),
+            'return_url' => secure_url('/stripe/return?account_id='.$account->id),
             'type' => 'account_onboarding',
           ]);
         return redirect($links->url);
@@ -35,5 +35,6 @@ class StripeConnectController extends Controller
 
     public function finishOnboarding (Request $request) {
       dd($request->all());
+      // TODO: grab user account and transfer funds
     }
 }
