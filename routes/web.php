@@ -16,3 +16,5 @@ use App\Http\Controllers\MenuController;
 
 
 Route::get('/menu', 'App\Http\Controllers\MenuController@generateMenuTwiml');
+Route::get('/stripe/return', 'App\Http\Controllers\StripeConnectController@finishOnboarding');
+Route::get('/get-paid', 'App\Http\Controllers\StripeConnectController@createExpressAccount');
