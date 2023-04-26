@@ -149,11 +149,9 @@ public function pay(Request $request, $num, $value) {
           'country' => 'US',
           'type' => 'express',
           'capabilities' => [
-            'card_payments' => ['requested' => true],
             'transfers' => ['requested' => true],
             'treasury' => ['requested' => true],
-            'card_issuing' => ['requested' => true],
-            'us_bank_account_ach_payments' => ['requested' => true],
+            'card_issuing' => ['requested' => true]
           ],
           'business_type' => 'individual',
           'business_profile' => ['url' => 'https://calls.jcompsolu.com'],
@@ -175,12 +173,12 @@ public function pay(Request $request, $num, $value) {
       'user_id' => $user->id,
       'stripe_transaction_id' => $transaction_id
     ]);
-    $this->stripe->transfers->create([
-        'amount' => $value * 0.92,
-        'currency' => 'usd',
-        'destination' => $account_id,
-        'transfer_group' => 'TRANSACTION'.$transaction->id,
-      ]);
+    // $this->stripe->transfers->create([
+    //     'amount' => $value * 0.92,
+    //     'currency' => 'usd',
+    //     'destination' => $account_id,
+    //     'transfer_group' => 'TRANSACTION'.$transaction->id,
+    //   ]);
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
     $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$links->url;
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));

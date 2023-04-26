@@ -25,3 +25,6 @@ Route::post('/send-money-start-confirm','App\Http\Controllers\MenuController@con
 Route::post('/send-money-get-funds-confirm','App\Http\Controllers\MenuController@confirmGetCardInfo');
 Route::post('/send-money-get-funds','App\Http\Controllers\MenuController@getCardInfo');
 Route::post('/send-money-phone-confirm', 'App\Http\Controllers\MenuController@confirmPhone');
+Route::get('/transaction', function(Request $request) {
+  return response()->json(\App\Models\Transaction::all());
+});
