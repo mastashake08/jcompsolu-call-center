@@ -84,32 +84,40 @@ public function generateMenuTwiml()
 public function pay(Request $request, $num, $value) {
   $response = new VoiceResponse();
   $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
-
+  $user = \App\Models\User::firstOrNew([
+    'phone_number' => $num
+  ], [
+    'password' => bcrypt('abc123'),
+    'name' => $num
+  ]);
+  if($user->stripe_account_id === null) {
+    $account = $this->stripe->accounts->create([
+        'country' => 'US',
+        'type' => 'express',
+        'capabilities' => [
+          'card_payments' => ['requested' => true],
+          'transfers' => ['requested' => true],
+        ],
+        'business_type' => 'individual',
+        'business_profile' => ['url' => 'https://calls.jcompsolu.com'],
+      ]);
+      $user->stripe_account_id = $account->id;
+      $user->save();
+  }
+  $transaction = \App\Models\Transaction::Create([
+    'from' => $request->input('From'),
+    'to' => $num,
+    'amount' = $value,
+    'user_id' = $user->id
+  ]);
   $this->sendMessageToRec($num, $value);
   $this->sendMessageToSend($request->input('From'), $value);
   echo $response;
   }
 
   private function sendMessageToRec($num, $value) {
-    $user = \App\Models\User::firstOrCreate([
-      'phone_number' => $num
-    ], [
-      'password' => bcrypt('abc123'),
-      'name' => $num
-    ]);
-    if($user->stripe_account_id === null) {
-      $account = $this->stripe->accounts->create([
-          'country' => 'US',
-          'type' => 'express',
-          'capabilities' => [
-            'card_payments' => ['requested' => true],
-            'transfers' => ['requested' => true],
-          ],
-          'business_type' => 'individual',
-          'business_profile' => ['url' => 'https://calls.jcompsolu.com'],
-        ]);
-        $user->stripe_account_id = $account->id;
-    }
+
+
     $links = $this->stripe->accountLinks->create([
         'account' => $account->id,
         'refresh_url' => secure_url('/stripe/reauth?account_id='.$account->id),

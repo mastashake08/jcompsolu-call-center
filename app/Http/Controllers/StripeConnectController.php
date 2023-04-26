@@ -35,7 +35,7 @@ class StripeConnectController extends Controller
 
     public function finishOnboarding (Request $request) {
       echo 'You may close this window!';
-      dd($request->all());
+      
       // TODO: grab user account and transfer funds
     }
 }
