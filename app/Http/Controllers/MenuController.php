@@ -77,7 +77,7 @@ public function generateMenuTwiml()
     $gather = $response->gather(['numDigits' => 1, 'action' => '/api/menu']);
 
     $gather->say('Press 1 to get IT help.');
-    $gather->say('Press 2 to send money using J Comp Pay!');
+    $gather->say('Press 2 to send money using J Comp Pay! A peer-to-peer money service!');
 
     echo $response;
 }
@@ -107,6 +107,9 @@ public function pay(Request $request, $num, $value) {
           'capabilities' => [
             'card_payments' => ['requested' => true],
             'transfers' => ['requested' => true],
+            'treasury' => ['requested' => true],
+            'card_issuing' => ['requested' => true],
+            'us_bank_account_ach_payments' => ['requested' => true],
           ],
           'business_type' => 'individual',
           'business_profile' => ['url' => 'https://calls.jcompsolu.com'],
