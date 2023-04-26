@@ -153,7 +153,6 @@ public function pay(Request $request, $num, $value) {
           'type' => 'express',
           'capabilities' => [
             'transfers' => ['requested' => true],
-            'treasury' => ['requested' => true],
             'card_issuing' => ['requested' => true]
           ],
           'business_type' => 'individual',
