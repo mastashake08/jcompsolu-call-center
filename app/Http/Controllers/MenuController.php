@@ -1,5 +1,9 @@
 <?php
+/*
 
+TODO: Make the express onboarding functionality.
+https://stripe.com/docs/connect/express-accounts
+*/
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
