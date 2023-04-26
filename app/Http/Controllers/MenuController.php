@@ -41,8 +41,9 @@ class MenuController extends Controller
       case 5:
       $response->pay([
         'paymentConnector' => 'Stripe_Connector_Test',
-        'tokenType' => 'reusable',
-        'chargeAmount' => '0'
+        'tokenType' => 'one-time',
+        'chargeAmount' => '20.00',
+        'action' => secure_url('/api/twilio/incoming/payment')
       ]);
       $response->say('Thank you');
 
@@ -71,4 +72,9 @@ public function generateMenuTwiml()
     return response($response)->header('Content-Type', 'text/xml');
 }
 
+public function pay(Request $request) {
+  $response = new VoiceResponse();
+  $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
+  echo $response;
+  }
 }
