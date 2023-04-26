@@ -110,7 +110,7 @@ public function getCardInfo (Request $request) {
 
     echo $response;
   } else {
-    $this->startSendMoney();
+    $this->startSendMoney($request);
   }
 }
 
