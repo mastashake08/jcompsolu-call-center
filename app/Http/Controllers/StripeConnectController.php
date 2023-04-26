@@ -31,7 +31,7 @@ class StripeConnectController extends Controller
             'type' => 'account_onboarding',
           ]);
 
-        return response()->redirect($links->return_url);
+        return redirect(secure_url('/stripe/return'));
     }
 
     public function finishOnboarding (Request $request) {
