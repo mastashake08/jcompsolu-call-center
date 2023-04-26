@@ -117,11 +117,12 @@ public function pay(Request $request, $num, $value) {
   }
 
   private function sendMessageToRec($num, $value) {
-    dd([$num,$value]);
+
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
     $url = secure_url('/');
     $body = `SOMEONE SENT YOU {$value}! To claim it go to {$url}`;
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
+    var_dump($body);
     $client->messages->create(
         // Where to send a text message (your cell phone?)
         $num,
