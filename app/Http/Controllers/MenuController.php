@@ -86,13 +86,13 @@ public function pay(Request $request, $num, $value) {
   $response = new VoiceResponse();
   $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
 
-  $this->sendMessageToRec($num, $request->input('From'), $value);
+  $this->sendMessageToRec($num, $request->input('From'), $value, $request['PaymentConfirmationCode']);
   $this->sendMessageToSend($request->input('From'), $value, $request['PaymentConfirmationCode']);
 
   echo $response;
   }
 
-  private function sendMessageToRec($num, $from, $value) {
+  private function sendMessageToRec($num, $from, $value, $transaction_id) {
     $user = \App\Models\User::firstOrNew([
       'phone_number' => $num
     ], [
@@ -126,7 +126,7 @@ public function pay(Request $request, $num, $value) {
       'to' => $num,
       'amount' => $value,
       'user_id' => $user->id,
-      'stripe_transaction_id' =>
+      'stripe_transaction_id' => $transaction_id
     ]);
 
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
