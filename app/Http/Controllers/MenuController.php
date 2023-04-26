@@ -38,6 +38,15 @@ class MenuController extends Controller
           $response->say('You selected to speak to the media department. Please wait while we transfer your call.');
           $response->dial('+18594024863');
           break;
+      case 5:
+      $response->pay([
+        'paymentConnector' => 'Stripe_Connector_Test',
+        'tokenType' => 'reusable',
+        'chargeAmount' => '0'
+      ]);
+      $response->say('Thank you');
+
+      break;
       default:
           // Handle invalid input
           $response->say('Invalid selection. Please try again.', ['voice' => 'alice']);
@@ -57,6 +66,7 @@ public function generateMenuTwiml()
     $gather->say('Press 2 for software services including web and app development');
     $gather->say('Press 3 for sales and product information.');
     $gather->say('Press 4 to media.');
+    $gather->say('Press 5 to manage your account.');
 
     return response($response)->header('Content-Type', 'text/xml');
 }
