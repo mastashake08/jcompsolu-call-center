@@ -67,23 +67,6 @@ public function getCardInfo (Request $request) {
     'chargeAmount' => number_format(($value /100), 2, '.', ' '),
     'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
   ]);
-  echo $response;
-}
-
-public function generateMenuTwiml()
-{
-    $response = new VoiceResponse();
-    $gather = $response->gather(['numDigits' => 1, 'action' => '/api/menu']);
-
-    $gather->say('Press 1 to get IT help.');
-    $gather->say('Press 2 to send money using J Comp Pay!');
-
-    echo $response;
-}
-
-public function pay(Request $request, $num, $value) {
-  $response = new VoiceResponse();
-  $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
   $user = \App\Models\User::firstOrNew([
     'phone_number' => $num
   ], [
@@ -110,6 +93,24 @@ public function pay(Request $request, $num, $value) {
     'amount' = $value,
     'user_id' = $user->id
   ]);
+  echo $response;
+}
+
+public function generateMenuTwiml()
+{
+    $response = new VoiceResponse();
+    $gather = $response->gather(['numDigits' => 1, 'action' => '/api/menu']);
+
+    $gather->say('Press 1 to get IT help.');
+    $gather->say('Press 2 to send money using J Comp Pay!');
+
+    echo $response;
+}
+
+public function pay(Request $request, $num, $value) {
+  $response = new VoiceResponse();
+  $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
+
   $this->sendMessageToRec($num, $value);
   $this->sendMessageToSend($request->input('From'), $value);
   echo $response;
