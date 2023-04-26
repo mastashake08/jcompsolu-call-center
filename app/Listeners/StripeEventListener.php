@@ -21,7 +21,7 @@ class StripeEventListener
             $transactions->each(function($transaction) use ($user){
               $stripe =  new \Stripe\StripeClient(env('STRIPE_SECRET'));
               $stripe->transfers->create([
-                  'amount' => (int)($transaction->amount * 0.92),
+                  'amount' => floor($transaction->amount * 0.92),
                   'currency' => 'usd',
                   'destination' => $user->stripe_account_id,
                   'transfer_group' => 'TRANSACTION'.$transaction->id,

@@ -176,7 +176,7 @@ public function pay(Request $request, $num, $value) {
     $acct = $this->stripe->accounts->retrieve($account_id);
     if($acct->details_submitted) {
       $this->stripe->transfers->create([
-          'amount' => $value * 0.92,
+          'amount' => floor($value * 0.92),
           'currency' => 'usd',
           'destination' => $account_id,
           'transfer_group' => 'TRANSACTION'.$transaction->id,
