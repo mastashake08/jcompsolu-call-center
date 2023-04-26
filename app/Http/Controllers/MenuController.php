@@ -110,12 +110,12 @@ public function generateMenuTwiml()
     return response($response)->header('Content-Type', 'text/xml');
 }
 
-public function pay(Request $request) {
+public function pay(Request $request, $num, $value) {
   $response = new VoiceResponse();
   $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
 
-  $this->sendMessageToRec($request->input('num'), $request->input('value'));
-  $this->sendMessageToSend($request->input('From'), $request->input('value'));
+  $this->sendMessageToRec($num, $value;
+  $this->sendMessageToSend($request->input('From'), $value);
   return response($response)->header('Content-Type', 'text/xml');
   }
 
