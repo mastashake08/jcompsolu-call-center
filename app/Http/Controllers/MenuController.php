@@ -76,7 +76,7 @@ public function startSendMoney (Request $request) {
 
   $gather->say('Input the desired amount to send. You can send up to $1000.');
   $gather->say('Please input the amount in cents. For example to send $100 you would enter 10000');
-
+  return response($response)->header('Content-Type', 'text/xml');
   }
 
 public function getCardInfo (Request $request) {
@@ -88,6 +88,7 @@ public function getCardInfo (Request $request) {
     'chargeAmount' => number_format(($value /100), 2, '.', ' '),
     'action' => secure_url('/api/twilio/incoming/payment')
   ]);
+  return response($response)->header('Content-Type', 'text/xml');
 }
 
 public function generateMenuTwiml()
@@ -109,6 +110,6 @@ public function pay(Request $request) {
   $response = new VoiceResponse();
   $response->say('Your payment has been taken, your confirmation code is: '. $request['PaymentConfirmationCode']);
   $response->say('A text message has been sent to the receiving party.');
-  echo $response;
+  return response($response)->header('Content-Type', 'text/xml');
   }
 }
