@@ -94,11 +94,11 @@ public function confirmStartSendMoney (Request $request) {
   $amt = $request->input('Digits');
   $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-get-funds?num='.$num.'&val='.$amt)]);
   $gather->say('Just to confirm. You want to sent $'.number_format(($amt /100), 2, '.', ' ').' to '.implode(' ',str_split($num)));
-  if($this->checkAccountExists($request->input('From'))) {
-    $gather->say('We see you have a J Comp Pay account');
-    $gather->say('If you have the funds in your account to cover the transaction their is no fee.');
-    $gather->say('Otherwise...');
-  }
+  // if($this->checkAccountExists($request->input('From'))) {
+  //   $gather->say('We see you have a J Comp Pay account');
+  //   $gather->say('If you have the funds in your account to cover the transaction their is no fee.');
+  //   $gather->say('Otherwise...');
+  // }
   $gather->say('A 8% + $0.50 processing fee is added to all payments sent.');
   $gather->say('This would bring the total charged amount to $'.number_format((($amt * 1.08 +50) /100), 2, '.', ' '));
   $gather->say('Press 1 for yes. 2 for no.');
@@ -111,23 +111,6 @@ public function getCardInfo (Request $request) {
   $num = $request->input('num');
   $ans = $request->input('Digits');
   if($ans == 1) {
-    if($this->checkAccountExists($request->input('From'))) {
-      $user = \App\Models\User::where('phone_num',substr($request->input('From'), 2))->first();
-      var_dump($user);
-      \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-
-      // Token is created using Checkout or Elements!
-      // Get the payment token ID submitted by the form:
-      $token = $_POST['stripeToken'];
-
-      $charge = \Stripe\Charge::create([
-        'amount' => $value,
-        'currency' => 'usd',
-        'source'=> $user->stripe_account_id
-      ]);
-      var_dump($charge);
-      $this->payWithTransfer($request->input('From'), $num, $value, $charge->id, $response);
-    } else {
       $response->pay([
         'paymentConnector' => 'Stripe_Connector',
         'tokenType' => 'one-time',
@@ -136,7 +119,6 @@ public function getCardInfo (Request $request) {
       ]);
 
       echo $response;
-    }
   } else {
     $this->startSendMoney($request);
   }
