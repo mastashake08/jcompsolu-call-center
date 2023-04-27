@@ -7,7 +7,7 @@ use Laravel\Cashier\Events\WebhookReceived;
 class StripeEventListener
 {
 
-    
+
     /**
      * Handle received Stripe webhooks.
      */
@@ -15,7 +15,7 @@ class StripeEventListener
     {
         if ($event->payload['type'] === 'account.updated') {
             // Handle the incoming event...
-            $account = $event->data->object;
+            $account = $event->payload['data']['object'];
             $user = \App\Models\User::where('stripe_account_id', $account->id)->first();
             $transactions = $user->transactions()->where('is_complete', false)->get();
             $transactions->each(function($transaction) use ($user){
