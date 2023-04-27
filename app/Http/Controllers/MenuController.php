@@ -150,11 +150,10 @@ public function pay(Request $request, $num, $value) {
     if($user->stripe_account_id === null) {
       $account = $this->stripe->accounts->create([
           'country' => 'US',
-          'type' => 'custom',
+          'type' => 'express',
           'capabilities' => [
             'transfers' => ['requested' => true],
-            'card_payments' => ['requested' => true],
-            'card_issuing' => ['requested' => true]
+            'card_payments' => ['requested' => true]
           ],
           'business_type' => 'individual',
           'business_profile' => ['url' => 'https://calls.jcompsolu.com'],
