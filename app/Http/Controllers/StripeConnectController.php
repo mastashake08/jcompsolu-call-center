@@ -47,7 +47,6 @@ class StripeConnectController extends Controller
           'return_url' => secure_url('/stripe/return?account_id='.$account_id),
           'type' => 'account_onboarding',
         ]);
-        dd($links);
       return redirect($links->url);
       // TODO: grab user account and transfer funds
     }
