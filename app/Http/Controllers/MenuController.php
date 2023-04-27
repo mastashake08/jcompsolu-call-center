@@ -91,8 +91,8 @@ public function confirmStartSendMoney (Request $request) {
   $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-get-funds?num='.$num.'&val='.$amt)]);
 
   $gather->say('Just to confirm. You want to sent $'.number_format(($amt /100), 2, '.', ' ').' to '.implode(' ',str_split($num)));
-  $gather->say('A 8% processing fee is added to all payments sent.');
-  $gather->say('This brings the total charged amount to $'.number_format((($amt * 1.08) /100), 2, '.', ' '));
+  $gather->say('A 8% + $0.50 processing fee is added to all payments sent.');
+  $gather->say('This brings the total charged amount to $'.number_format((($amt * 1.08 +50) /100), 2, '.', ' '));
   $gather->say('Press 1 for yes. 2 for no.');
   echo $response;
 }
@@ -107,7 +107,7 @@ public function getCardInfo (Request $request) {
     $response->pay([
       'paymentConnector' => 'Stripe_Connector_Test',
       'tokenType' => 'one-time',
-      'chargeAmount' => number_format((($value*1.08) /100), 2, '.', ' '),
+      'chargeAmount' => number_format((($value*1.08 + 50) /100), 2, '.', ' '),
       'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
     ]);
 
