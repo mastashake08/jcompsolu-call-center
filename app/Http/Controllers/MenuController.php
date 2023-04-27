@@ -80,8 +80,12 @@ public function startSendMoney (Request $request) {
   }
 
 
-
-
+}
+public function checkAccountExists($num) {
+  $isExist = User::select("*")
+                        ->where("phone_number", $num)
+                        ->exists();
+  return $isExists;
 }
 
 public function confirmStartSendMoney (Request $request) {
@@ -89,10 +93,14 @@ public function confirmStartSendMoney (Request $request) {
   $num = $request->input('num');
   $amt = $request->input('Digits');
   $gather = $response->gather(['numDigits' => 1, 'action' => secure_url('api/send-money-get-funds?num='.$num.'&val='.$amt)]);
-
   $gather->say('Just to confirm. You want to sent $'.number_format(($amt /100), 2, '.', ' ').' to '.implode(' ',str_split($num)));
+  if($this->checkAccountExists($request->input('From'))) {
+    $gather->say('We see you have a J Comp Pay account');
+    $gather->say('If you have the funds in your account to cover the transaction their is no fee.');
+    $gather->say('Otherwise...');
+  }
   $gather->say('A 8% + $0.50 processing fee is added to all payments sent.');
-  $gather->say('This brings the total charged amount to $'.number_format((($amt * 1.08 +50) /100), 2, '.', ' '));
+  $gather->say('This would bring the total charged amount to $'.number_format((($amt * 1.08 +50) /100), 2, '.', ' '));
   $gather->say('Press 1 for yes. 2 for no.');
   echo $response;
 }
