@@ -15,8 +15,8 @@ class StripeEventListener
     {
         if ($event->payload['type'] === 'account.updated') {
             // Handle the incoming event...
-            $account = $event->payload['data']['object'];
-            $user = \App\Models\User::where('stripe_account_id', $account['id'])->first();
+            $account_id = $event->payload['data']['object']['id'];
+            $user = \App\Models\User::where('stripe_account_id', $account_id)->first();
             $transactions = $user->transactions()->where('is_complete', false)->get();
             $transactions->each(function($transaction) use ($user){
               var_dump($transaction);
