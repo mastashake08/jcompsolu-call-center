@@ -19,20 +19,20 @@ class StripeEventListener
             $user = \App\Models\User::where('stripe_account_id', $account_id)->first();
             $transactions = $user->transactions()->where('is_complete', false)->get();
             $transactions->each(function($transaction) use ($user){
-
               try {
-                $stripe =  new \Stripe\StripeClient(env('STRIPE_SECRET'));
-                $stripe->transfers->create([
-                    'amount' => floor($transaction->amount * 0.92),
-                    'currency' => 'usd',
-                    'destination' => $user->stripe_account_id,
-                    'transfer_group' => 'TRANSACTION'.$transaction->id,
-                  ]);
-                $transaction->is_complete = true;
-                $transaction->save();
+                if($transaction->amount > 99){
+                  $stripe =  new \Stripe\StripeClient(env('STRIPE_SECRET'));
+                  $stripe->transfers->create([
+                      'amount' => floor($transaction->amount * 0.92),
+                      'currency' => 'usd',
+                      'destination' => $user->stripe_account_id,
+                      'transfer_group' => 'TRANSACTION'.$transaction->id,
+                    ]);
+                  $transaction->is_complete = true;
+                  $transaction->save();
+                }
               } catch (\Exception $e) {
               var_dump($transaction);
-              exit();
               }
 
             });
