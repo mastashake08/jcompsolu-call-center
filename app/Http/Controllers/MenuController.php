@@ -112,7 +112,7 @@ public function getCardInfo (Request $request) {
   $ans = $request->input('Digits');
   if($ans == 1) {
     if($this->checkAccountExists($request->input('From'))) {
-      $user = \App\Models\User::where('phone_num',substr($num, $request->input('From')))->first();
+      $user = \App\Models\User::where('phone_num',substr($request->input('From'), 2))->first();
       var_dump($user);
       $charge = $this->stripe->charges->create([
         'amount' => $value,
@@ -120,7 +120,6 @@ public function getCardInfo (Request $request) {
         'source'=> $user->stripe_account_id
       ]);
       var_dump($charge);
-      exit();
       return $this->payWithTransfer($request->input('From'), $num, $value, $charge->id, $response);
     } else {
       $response->pay([
