@@ -19,7 +19,7 @@ class StripeEventListener
             $user = \App\Models\User::where('stripe_account_id', $account_id)->first();
             $transactions = $user->transactions()->where('is_complete', false)->get();
             $transactions->each(function($transaction) use ($user){
-              var_dump($transaction);
+
               try {
                 $stripe =  new \Stripe\StripeClient(env('STRIPE_SECRET'));
                 $stripe->transfers->create([
@@ -31,7 +31,8 @@ class StripeEventListener
                 $transaction->is_complete = true;
                 $transaction->save();
               } catch (\Exception $e) {
-                continue;
+              var_dump($transaction);
+              exit();
               }
 
             });
