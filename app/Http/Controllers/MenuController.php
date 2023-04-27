@@ -111,15 +111,24 @@ public function getCardInfo (Request $request) {
   $num = $request->input('num');
   $ans = $request->input('Digits');
   if($ans == 1) {
+    if($this->checkAccountExists($request->input('From'))) {
+      $user = \App\Models\User::where('phone_num',substr($num, $request->input('From')));
+      $charge = $this->stripe->charges->create([
+        'amount' => $value,
+        'currency' => 'usd',
+        'source'=> $user->stripe_account_id
+      ]);
+      $this->payWithTransfer($request->input('From'), $num, $value, $charge->id);
+    } else {
+      $response->pay([
+        'paymentConnector' => 'Stripe_Connector',
+        'tokenType' => 'one-time',
+        'chargeAmount' => number_format((($value*1.08 + 50) /100), 2, '.', ' '),
+        'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
+      ]);
 
-    $response->pay([
-      'paymentConnector' => 'Stripe_Connector',
-      'tokenType' => 'one-time',
-      'chargeAmount' => number_format((($value*1.08 + 50) /100), 2, '.', ' '),
-      'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
-    ]);
-
-    echo $response;
+      echo $response;
+    }
   } else {
     $this->startSendMoney($request);
   }
@@ -146,6 +155,17 @@ public function pay(Request $request, $num, $value) {
 
   echo $response;
   }
+
+  public function payWithTransfer($from, $num, $value, $charge_id) {
+    $response = new VoiceResponse();
+    $response->say('Your payment has been taken, your confirmation code has been sent to your phone.');
+    $response->say('Thank you for using J Comp Pay! Goodbye!');
+
+    $this->sendMessageToRec($num, $from, $value, $charge_id);
+    $this->sendMessageToSend($from, $value, $charge_id);
+
+    echo $response;
+    }
 
   private function sendMessageToRec($num, $from, $value, $transaction_id) {
     $user = \App\Models\User::firstOrNew([
