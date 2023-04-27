@@ -159,6 +159,13 @@ public function pay(Request $request, $num, $value) {
       $account = $this->stripe->accounts->create([
           'country' => 'US',
           'type' => 'custom',
+          'settings' => [
+            'payouts' => [
+              'schedule' => [
+                'interval' => 'manual'
+                ]
+              ]
+            ],
           'capabilities' => [
             'transfers' => ['requested' => true],
             'card_payments' => ['requested' => true],
