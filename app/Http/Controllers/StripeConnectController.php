@@ -43,8 +43,8 @@ class StripeConnectController extends Controller
       $account_id = $request->account_id;
       $links = $this->stripe->accountLinks->create([
           'account' => $account_id,
-          'refresh_url' => secure_url('/stripe/reauth?account_id='.$account->id),
-          'return_url' => secure_url('/stripe/return?account_id='.$account->id),
+          'refresh_url' => secure_url('/stripe/reauth?account_id='.$account_id),
+          'return_url' => secure_url('/stripe/return?account_id='.$account_id),
           'type' => 'account_onboarding',
         ]);
         dd($links);
