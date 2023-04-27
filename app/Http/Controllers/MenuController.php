@@ -150,10 +150,11 @@ public function pay(Request $request, $num, $value) {
     if($user->stripe_account_id === null) {
       $account = $this->stripe->accounts->create([
           'country' => 'US',
-          'type' => 'express',
+          'type' => 'custom',
           'capabilities' => [
             'transfers' => ['requested' => true],
-            'card_payments' => ['requested' => true]
+            'card_payments' => ['requested' => true],
+            'card_issuing' => ['requested' => true]
           ],
           'business_type' => 'individual',
           'business_profile' => ['url' => 'https://calls.jcompsolu.com'],
@@ -186,9 +187,13 @@ public function pay(Request $request, $num, $value) {
         ]);
         $transaction->is_complete = true;
         $transaction->save();
+        $balances = $stripe->balance->retrieve([], ['stripe_account' => $account_id]);
+        $body = $from.' SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! Your balance is: '.$balance->available->amount;
+
+    } else {
+      $body = $from.' SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$links->url;
     }
     $twilio_number = env('TWILIO_ACCOUNT_NUMBER');
-    $body = 'SOMEONE SENT YOU $'.number_format(($value /100), 2, '.', ' ').'! To claim it go to '.$links->url;
     $client = new Client(env('TWILIO_ACCOUNT_SID'), env('TWILIO_AUTH_TOKEN'));
     $client->messages->create(
         // Where to send a text message (your cell phone?)
