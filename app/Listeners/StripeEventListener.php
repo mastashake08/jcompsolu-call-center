@@ -7,7 +7,7 @@ use Laravel\Cashier\Events\WebhookReceived;
 class StripeEventListener
 {
 
-    public function
+    
     /**
      * Handle received Stripe webhooks.
      */
