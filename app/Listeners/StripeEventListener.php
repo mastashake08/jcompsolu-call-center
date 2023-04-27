@@ -30,7 +30,7 @@ class StripeEventListener
                   ]);
                 $transaction->is_complete = true;
                 $transaction->save();
-              } catch ($e) {
+              } catch (\Exception $e) {
                 continue;
               }
 
