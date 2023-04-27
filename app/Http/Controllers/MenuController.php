@@ -105,7 +105,7 @@ public function getCardInfo (Request $request) {
   if($ans == 1) {
 
     $response->pay([
-      'paymentConnector' => 'Stripe_Connector_Test',
+      'paymentConnector' => 'Stripe_Connector',
       'tokenType' => 'one-time',
       'chargeAmount' => number_format((($value*1.08 + 50) /100), 2, '.', ' '),
       'action' => secure_url('/api/twilio/incoming/payment/'.$num.'/value/'.$value)
