@@ -168,17 +168,16 @@ public function pay(Request $request, $num, $value) {
       $account = $this->stripe->accounts->create([
           'country' => 'US',
           'type' => 'custom',
-          'settings' => [
-            'payouts' => [
-              'schedule' => [
-                'interval' => 'manual'
-                ]
-              ]
-            ],
+          // 'settings' => [
+          //   'payouts' => [
+          //     'schedule' => [
+          //       'interval' => 'manual'
+          //       ]
+          //     ]
+          //   ],
           'capabilities' => [
             'transfers' => ['requested' => true],
-            'card_payments' => ['requested' => true],
-            'card_issuing' => ['requested' => true]
+            'card_payments' => ['requested' => true]
           ],
           'business_type' => 'individual',
           'business_profile' => ['url' => 'https://calls.jcompsolu.com'],
@@ -193,7 +192,7 @@ public function pay(Request $request, $num, $value) {
         'return_url' => secure_url('/stripe/return?account_id='.$account_id),
         'type' => 'account_onboarding',
       ]);
-      $amount = floor($value * 1.08);
+      $amount = floor($value * 1.08 + 50);
     $transaction = \App\Models\Transaction::Create([
       'from' => $from,
       'to' => $num,
