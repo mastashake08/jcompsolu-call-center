@@ -83,7 +83,7 @@ public function startSendMoney (Request $request) {
 }
 public function checkAccountExists($num) {
   $isExist = \App\Models\User::select("*")
-                        ->where("phone_number", $num)
+                        ->where("phone_number", substr($num, 2))
                         ->exists();
   return $isExist;
 }
