@@ -112,7 +112,7 @@ public function getCardInfo (Request $request) {
   $ans = $request->input('Digits');
   if($ans == 1) {
     if($this->checkAccountExists($request->input('From'))) {
-      $user = \App\Models\User::where('phone_num',substr($num, $request->input('From')));
+      $user = \App\Models\User::where('phone_num',substr($num, $request->input('From')))->first();
       $charge = $this->stripe->charges->create([
         'amount' => $value,
         'currency' => 'usd',
