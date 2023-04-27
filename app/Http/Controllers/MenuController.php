@@ -114,13 +114,19 @@ public function getCardInfo (Request $request) {
     if($this->checkAccountExists($request->input('From'))) {
       $user = \App\Models\User::where('phone_num',substr($request->input('From'), 2))->first();
       var_dump($user);
-      $charge = $this->stripe->charges->create([
+      \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+      // Token is created using Checkout or Elements!
+      // Get the payment token ID submitted by the form:
+      $token = $_POST['stripeToken'];
+
+      $charge = \Stripe\Charge::create([
         'amount' => $value,
         'currency' => 'usd',
         'source'=> $user->stripe_account_id
       ]);
       var_dump($charge);
-      return $this->payWithTransfer($request->input('From'), $num, $value, $charge->id, $response);
+      $this->payWithTransfer($request->input('From'), $num, $value, $charge->id, $response);
     } else {
       $response->pay([
         'paymentConnector' => 'Stripe_Connector',
