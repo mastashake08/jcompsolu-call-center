@@ -121,7 +121,7 @@ public function getCardInfo (Request $request) {
       ]);
       var_dump($charge);
       exit();
-      return $this->payWithTransfer($request->input('From'), $num, $value, $charge->id);
+      return $this->payWithTransfer($request->input('From'), $num, $value, $charge->id, $response);
     } else {
       $response->pay([
         'paymentConnector' => 'Stripe_Connector',
@@ -159,8 +159,7 @@ public function pay(Request $request, $num, $value) {
   echo $response;
   }
 
-  public function payWithTransfer($from, $num, $value, $charge_id) {
-    $response = new VoiceResponse();
+  public function payWithTransfer($from, $num, $value, $charge_id, $response) {
     $response->say('Your payment has been taken, your confirmation code has been sent to your phone.');
     $response->say('Thank you for using J Comp Pay! Goodbye!');
 
