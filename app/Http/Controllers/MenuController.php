@@ -17,8 +17,8 @@ class MenuController extends Controller
   }
   private function callIt ($response) {
     // Forward call to Jyrone Parker
-    $response->say('You selected to speak to the IT department. Please wait while we transfer your call.');
-    $response->dial('+18594024863');
+    $response->say(env('MENU_ITEM_ONE_SELECTED'));
+    $response->dial(env('BUSINESS_NUMBER'));
   }
   public function handleMenu(Request $request)
 {
@@ -129,8 +129,8 @@ public function generateMenuTwiml()
     $response = new VoiceResponse();
     $gather = $response->gather(['numDigits' => 1, 'action' => '/api/menu']);
 
-    $gather->say('Press 1 to get IT help.');
-    $gather->say('Press 2 to send money using J Comp Pay! A peer-to-peer money service!');
+    $gather->say(env('MENU_ITEM_ONE'));
+    //$gather->say(env('MENU_ITEM_TWO'));
 
     echo $response;
 }
